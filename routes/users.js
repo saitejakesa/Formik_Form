@@ -2,6 +2,7 @@ var express = require('express');
 const {mongoose,productModel}=require('../dbSchema')
 const {mongodb,dbName,dbUrl}=require('../dbConfig')
 var router = express.Router();
+// let id= mongoose.Schema.Types.ObjectId;
 
 /* GET users listing. */
 router.post('/create', async(req,res)=>{
@@ -16,11 +17,15 @@ router.post('/create', async(req,res)=>{
       })
     }
     else{
+      req.body._id = new mongoose.Types.ObjectId();
       let addingProduct=await productModel.create(req.body)
       console.log(addingProduct)
       res.send({
         statusCode:200,
-        products:addingProduct,
+        name:req.body.name,
+        weight:req.body.weight,
+        price:req.body.price,
+        image:req.body.image,
         message:"Product Created Succesfully"
       })
     }
@@ -39,7 +44,7 @@ router.get('/all',async(req,res)=>{
     // console.log(allproducts)
     res.send({
       statusCode:200,
-      allproducts
+      allproducts,
     })
   }
   catch(error){
@@ -47,21 +52,7 @@ router.get('/all',async(req,res)=>{
     res.send({statusCode:400,message:"Internal Server Error",error})
   }
 })
-router.get('/all',async(req,res)=>{
-  await mongoose.connect(dbUrl)
-  try{
-    let allproducts=await productModel.find().lean()
-    // console.log(allproducts)
-    res.send({
-      statusCode:200,
-      allproducts
-    })
-  }
-  catch(error){
-    console.log(error)
-    res.send({statusCode:400,message:"Internal Server Error",error})
-  }
-})
+
 
 router.put('/update', async(req,res)=>{
   await mongoose.connect(dbUrl)
